@@ -1,0 +1,666 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/goguaD/finalProjectML/blob/main/DLinear\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "5YUVXoWktVAQ",
+        "outputId": "0f32b876-e345-4720-cb2a-f2182ccb989d"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount(\"/content/drive\", force_remount=True).\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n",
+        "files.upload()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 92
+        },
+        "id": "U_YgVlyNtXIp",
+        "outputId": "273ce690-b289-4e5d-94cf-321d8a1b217e"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-148219dc-ef69-457f-ae74-f32af578604a\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-148219dc-ef69-457f-ae74-f32af578604a\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script>// Copyright 2017 Google LLC\n",
+              "//\n",
+              "// Licensed under the Apache License, Version 2.0 (the \"License\");\n",
+              "// you may not use this file except in compliance with the License.\n",
+              "// You may obtain a copy of the License at\n",
+              "//\n",
+              "//      http://www.apache.org/licenses/LICENSE-2.0\n",
+              "//\n",
+              "// Unless required by applicable law or agreed to in writing, software\n",
+              "// distributed under the License is distributed on an \"AS IS\" BASIS,\n",
+              "// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n",
+              "// See the License for the specific language governing permissions and\n",
+              "// limitations under the License.\n",
+              "\n",
+              "/**\n",
+              " * @fileoverview Helpers for google.colab Python module.\n",
+              " */\n",
+              "(function(scope) {\n",
+              "function span(text, styleAttributes = {}) {\n",
+              "  const element = document.createElement('span');\n",
+              "  element.textContent = text;\n",
+              "  for (const key of Object.keys(styleAttributes)) {\n",
+              "    element.style[key] = styleAttributes[key];\n",
+              "  }\n",
+              "  return element;\n",
+              "}\n",
+              "\n",
+              "// Max number of bytes which will be uploaded at a time.\n",
+              "const MAX_PAYLOAD_SIZE = 100 * 1024;\n",
+              "\n",
+              "function _uploadFiles(inputId, outputId) {\n",
+              "  const steps = uploadFilesStep(inputId, outputId);\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  // Cache steps on the outputElement to make it available for the next call\n",
+              "  // to uploadFilesContinue from Python.\n",
+              "  outputElement.steps = steps;\n",
+              "\n",
+              "  return _uploadFilesContinue(outputId);\n",
+              "}\n",
+              "\n",
+              "// This is roughly an async generator (not supported in the browser yet),\n",
+              "// where there are multiple asynchronous steps and the Python side is going\n",
+              "// to poll for completion of each step.\n",
+              "// This uses a Promise to block the python side on completion of each step,\n",
+              "// then passes the result of the previous step as the input to the next step.\n",
+              "function _uploadFilesContinue(outputId) {\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  const steps = outputElement.steps;\n",
+              "\n",
+              "  const next = steps.next(outputElement.lastPromiseValue);\n",
+              "  return Promise.resolve(next.value.promise).then((value) => {\n",
+              "    // Cache the last promise value to make it available to the next\n",
+              "    // step of the generator.\n",
+              "    outputElement.lastPromiseValue = value;\n",
+              "    return next.value.response;\n",
+              "  });\n",
+              "}\n",
+              "\n",
+              "/**\n",
+              " * Generator function which is called between each async step of the upload\n",
+              " * process.\n",
+              " * @param {string} inputId Element ID of the input file picker element.\n",
+              " * @param {string} outputId Element ID of the output display.\n",
+              " * @return {!Iterable<!Object>} Iterable of next steps.\n",
+              " */\n",
+              "function* uploadFilesStep(inputId, outputId) {\n",
+              "  const inputElement = document.getElementById(inputId);\n",
+              "  inputElement.disabled = false;\n",
+              "\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  outputElement.innerHTML = '';\n",
+              "\n",
+              "  const pickedPromise = new Promise((resolve) => {\n",
+              "    inputElement.addEventListener('change', (e) => {\n",
+              "      resolve(e.target.files);\n",
+              "    });\n",
+              "  });\n",
+              "\n",
+              "  const cancel = document.createElement('button');\n",
+              "  inputElement.parentElement.appendChild(cancel);\n",
+              "  cancel.textContent = 'Cancel upload';\n",
+              "  const cancelPromise = new Promise((resolve) => {\n",
+              "    cancel.onclick = () => {\n",
+              "      resolve(null);\n",
+              "    };\n",
+              "  });\n",
+              "\n",
+              "  // Wait for the user to pick the files.\n",
+              "  const files = yield {\n",
+              "    promise: Promise.race([pickedPromise, cancelPromise]),\n",
+              "    response: {\n",
+              "      action: 'starting',\n",
+              "    }\n",
+              "  };\n",
+              "\n",
+              "  cancel.remove();\n",
+              "\n",
+              "  // Disable the input element since further picks are not allowed.\n",
+              "  inputElement.disabled = true;\n",
+              "\n",
+              "  if (!files) {\n",
+              "    return {\n",
+              "      response: {\n",
+              "        action: 'complete',\n",
+              "      }\n",
+              "    };\n",
+              "  }\n",
+              "\n",
+              "  for (const file of files) {\n",
+              "    const li = document.createElement('li');\n",
+              "    li.append(span(file.name, {fontWeight: 'bold'}));\n",
+              "    li.append(span(\n",
+              "        `(${file.type || 'n/a'}) - ${file.size} bytes, ` +\n",
+              "        `last modified: ${\n",
+              "            file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() :\n",
+              "                                    'n/a'} - `));\n",
+              "    const percent = span('0% done');\n",
+              "    li.appendChild(percent);\n",
+              "\n",
+              "    outputElement.appendChild(li);\n",
+              "\n",
+              "    const fileDataPromise = new Promise((resolve) => {\n",
+              "      const reader = new FileReader();\n",
+              "      reader.onload = (e) => {\n",
+              "        resolve(e.target.result);\n",
+              "      };\n",
+              "      reader.readAsArrayBuffer(file);\n",
+              "    });\n",
+              "    // Wait for the data to be ready.\n",
+              "    let fileData = yield {\n",
+              "      promise: fileDataPromise,\n",
+              "      response: {\n",
+              "        action: 'continue',\n",
+              "      }\n",
+              "    };\n",
+              "\n",
+              "    // Use a chunked sending to avoid message size limits. See b/62115660.\n",
+              "    let position = 0;\n",
+              "    do {\n",
+              "      const length = Math.min(fileData.byteLength - position, MAX_PAYLOAD_SIZE);\n",
+              "      const chunk = new Uint8Array(fileData, position, length);\n",
+              "      position += length;\n",
+              "\n",
+              "      const base64 = btoa(String.fromCharCode.apply(null, chunk));\n",
+              "      yield {\n",
+              "        response: {\n",
+              "          action: 'append',\n",
+              "          file: file.name,\n",
+              "          data: base64,\n",
+              "        },\n",
+              "      };\n",
+              "\n",
+              "      let percentDone = fileData.byteLength === 0 ?\n",
+              "          100 :\n",
+              "          Math.round((position / fileData.byteLength) * 100);\n",
+              "      percent.textContent = `${percentDone}% done`;\n",
+              "\n",
+              "    } while (position < fileData.byteLength);\n",
+              "  }\n",
+              "\n",
+              "  // All done.\n",
+              "  yield {\n",
+              "    response: {\n",
+              "      action: 'complete',\n",
+              "    }\n",
+              "  };\n",
+              "}\n",
+              "\n",
+              "scope.google = scope.google || {};\n",
+              "scope.google.colab = scope.google.colab || {};\n",
+              "scope.google.colab._files = {\n",
+              "  _uploadFiles,\n",
+              "  _uploadFilesContinue,\n",
+              "};\n",
+              "})(self);\n",
+              "</script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving kaggle.json to kaggle.json\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "{'kaggle.json': b'{\"username\":\"ditogogua\",\"key\":\"33ff556f8487784b1a2aa019105cd547\"}'}"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 2
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!mkdir -p ~/.kaggle\n",
+        "!mv kaggle.json ~/.kaggle/\n",
+        "!chmod 600 ~/.kaggle/kaggle.json\n"
+      ],
+      "metadata": {
+        "id": "5Blaq58QtY26"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!kaggle competitions download -c walmart-recruiting-store-sales-forecasting\n",
+        "!unzip -o walmart-recruiting-store-sales-forecasting.zip -d walmart_data/"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "4bnp4wOgtc5I",
+        "outputId": "a9d22dbc-6c8e-4e1b-dfb1-c4cf09a8d0a6"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "401 Client Error: Unauthorized for url: https://www.kaggle.com/api/v1/competitions/data/download-all/walmart-recruiting-store-sales-forecasting\n",
+            "Archive:  walmart-recruiting-store-sales-forecasting.zip\n",
+            "  inflating: walmart_data/features.csv.zip  \n",
+            "  inflating: walmart_data/sampleSubmission.csv.zip  \n",
+            "  inflating: walmart_data/stores.csv  \n",
+            "  inflating: walmart_data/test.csv.zip  \n",
+            "  inflating: walmart_data/train.csv.zip  \n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install einops datasets tsai pandas numpy scikit-learn --quiet\n"
+      ],
+      "metadata": {
+        "id": "VEmd4F70yiSl"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import numpy as np\n",
+        "import pandas as pd\n",
+        "import torch\n",
+        "import torch.nn as nn\n",
+        "from torch.utils.data import TensorDataset, DataLoader\n",
+        "from sklearn.preprocessing import StandardScaler\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from pathlib import Path\n",
+        "\n",
+        "\n",
+        "torch.manual_seed(0)\n",
+        "np.random.seed(0)\n",
+        "\n",
+        "\n",
+        "DATA_DIR = Path('/content/walmart_data')\n",
+        "\n",
+        "train_df    = pd.read_csv(DATA_DIR / 'train.csv')\n",
+        "features_df = pd.read_csv(DATA_DIR / 'features.csv')\n",
+        "stores_df   = pd.read_csv(DATA_DIR / 'stores.csv')\n",
+        "\n",
+        "df = (train_df\n",
+        "      .merge(features_df, on=['Store', 'Date'], how='left')\n",
+        "      .merge(stores_df,   on='Store',      how='left'))\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "gUn-2m4Jyz8d"
+      },
+      "execution_count": 39,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['IsHoliday'] = df['IsHoliday_x'].astype(int)\n",
+        "df.drop(columns=['IsHoliday_x', 'IsHoliday_y'], inplace=True, errors='ignore')"
+      ],
+      "metadata": {
+        "id": "T1L23Xtl4FtS"
+      },
+      "execution_count": 40,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['Date'] = pd.to_datetime(df['Date'])\n",
+        "df = df.sort_values(['Store', 'Date'])\n",
+        "df = df.fillna(method='ffill')\n",
+        "\n",
+        "df['Weekly_Sales'] = df['Weekly_Sales'].clip(lower=0)\n",
+        "df['Week']         = df['Date'].dt.isocalendar().week.astype(int)\n",
+        "df['Year']         = df['Date'].dt.year.astype(int)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "CR6KtB9-7J9C",
+        "outputId": "41abc285-1172-4169-86a5-5c240263c465"
+      },
+      "execution_count": 41,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipython-input-41-3157990802.py:3: FutureWarning: DataFrame.fillna with 'method' is deprecated and will raise in a future version. Use obj.ffill() or obj.bfill() instead.\n",
+            "  df = df.fillna(method='ffill')         # forward‑fill weather / CPI / etc.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "feature_cols = [\n",
+        "    'Temperature', 'Fuel_Price', 'CPI', 'Unemployment',\n",
+        "    'IsHoliday', 'Week', 'Year',\n",
+        "    'MarkDown1', 'MarkDown2', 'MarkDown3', 'MarkDown4', 'MarkDown5'\n",
+        "]\n",
+        "target_col   = 'Weekly_Sales'\n",
+        "\n",
+        "df[feature_cols] = df[feature_cols].fillna(0)"
+      ],
+      "metadata": {
+        "id": "TWO1zu3HurFb"
+      },
+      "execution_count": 42,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "STORE_ID   = 1\n",
+        "store_df   = df[df['Store'] == STORE_ID].copy()"
+      ],
+      "metadata": {
+        "id": "wm5ubQKjvKp5"
+      },
+      "execution_count": 43,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "X_raw = store_df[feature_cols].values.astype(np.float32)\n",
+        "y_raw = np.log1p(store_df[target_col].values.astype(np.float32))   # log target\n",
+        "\n",
+        "scaler = StandardScaler()\n",
+        "X_scaled = scaler.fit_transform(X_raw)"
+      ],
+      "metadata": {
+        "id": "hwVzF6MQtlst"
+      },
+      "execution_count": 44,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def make_sequences(X, y, input_len=12, output_len=1):\n",
+        "    Xs, ys = [], []\n",
+        "    for i in range(len(X) - input_len - output_len):\n",
+        "        Xs.append(X[i:i+input_len])\n",
+        "        ys.append(y[i+input_len:i+input_len+output_len])\n",
+        "    return np.asarray(Xs, dtype=np.float32), np.asarray(ys, dtype=np.float32)\n",
+        "\n",
+        "INPUT_LEN  = 12\n",
+        "OUTPUT_LEN = 1\n",
+        "\n",
+        "X_seq, y_seq = make_sequences(X_scaled, y_raw, INPUT_LEN, OUTPUT_LEN)"
+      ],
+      "metadata": {
+        "id": "d4rbveG3u8vd"
+      },
+      "execution_count": 45,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "X_train, X_val, y_train, y_val = train_test_split(\n",
+        "    X_seq, y_seq, test_size=0.2, shuffle=False\n",
+        ")\n",
+        "\n",
+        "train_ds = TensorDataset(\n",
+        "    torch.tensor(X_train, dtype=torch.float32),\n",
+        "    torch.tensor(y_train, dtype=torch.float32)\n",
+        ")\n",
+        "val_ds = TensorDataset(\n",
+        "    torch.tensor(X_val, dtype=torch.float32),\n",
+        "    torch.tensor(y_val, dtype=torch.float32)\n",
+        ")\n",
+        "\n",
+        "\n",
+        "train_dl = DataLoader(train_ds, batch_size=32, shuffle=True)\n",
+        "val_dl   = DataLoader(val_ds,   batch_size=32)"
+      ],
+      "metadata": {
+        "id": "cl7S55B2vitO"
+      },
+      "execution_count": 48,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "class LSTMForecaster(nn.Module):\n",
+        "    def __init__(self, n_features, hidden_dim=64, n_layers=2, output_len=1,\n",
+        "                 dropout=0.2):\n",
+        "        super().__init__()\n",
+        "        self.lstm = nn.LSTM(\n",
+        "            input_size=n_features,\n",
+        "            hidden_size=hidden_dim,\n",
+        "            num_layers=n_layers,\n",
+        "            batch_first=True,\n",
+        "            dropout=dropout\n",
+        "        )\n",
+        "        self.fc = nn.Linear(hidden_dim, output_len)\n",
+        "\n",
+        "    def forward(self, x):\n",
+        "        out, _ = self.lstm(x)\n",
+        "        return self.fc(out[:, -1, :])\n",
+        "\n",
+        "device = 'cuda' if torch.cuda.is_available() else 'cpu'\n",
+        "model = LSTMForecaster(\n",
+        "    n_features=X_train.shape[2],\n",
+        "    hidden_dim=64,\n",
+        "    n_layers=2,\n",
+        "    output_len=OUTPUT_LEN\n",
+        ").to(device)\n",
+        "\n",
+        "optimizer = torch.optim.Adam(model.parameters(), lr=5e-4)\n",
+        "loss_fn   = nn.L1Loss()"
+      ],
+      "metadata": {
+        "id": "dNX7tLxb0xM-"
+      },
+      "execution_count": 51,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "EPOCHS = 30\n",
+        "for epoch in range(1, EPOCHS+1):\n",
+        "    model.train()\n",
+        "    running = 0\n",
+        "    for xb, yb in train_dl:\n",
+        "        xb, yb = xb.to(device), yb.to(device)\n",
+        "        optimizer.zero_grad()\n",
+        "        loss = loss_fn(model(xb), yb)\n",
+        "        loss.backward()\n",
+        "        optimizer.step()\n",
+        "        running += loss.item() * xb.size(0)\n",
+        "    train_loss = running / len(train_dl.dataset)\n",
+        "\n",
+        "    model.eval()\n",
+        "    running = 0\n",
+        "    with torch.no_grad():\n",
+        "        for xb, yb in val_dl:\n",
+        "            xb, yb = xb.to(device), yb.to(device)\n",
+        "            running += loss_fn(model(xb), yb).item() * xb.size(0)\n",
+        "    val_loss = running / len(val_dl.dataset)\n",
+        "\n",
+        "    print(f\"Epoch {epoch:02d} | train L1: {train_loss:.4f} | val L1: {val_loss:.4f}\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "L-48hMwI73kY",
+        "outputId": "d1a930c9-836e-4152-89bf-c07825770d02"
+      },
+      "execution_count": 52,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 01 | train L1: 3.0910 | val L1: 1.3851\n",
+            "Epoch 02 | train L1: 1.2989 | val L1: 1.3794\n",
+            "Epoch 03 | train L1: 1.2981 | val L1: 1.3809\n",
+            "Epoch 04 | train L1: 1.2987 | val L1: 1.3850\n",
+            "Epoch 05 | train L1: 1.2987 | val L1: 1.3809\n",
+            "Epoch 06 | train L1: 1.2987 | val L1: 1.3852\n",
+            "Epoch 07 | train L1: 1.2995 | val L1: 1.3729\n",
+            "Epoch 08 | train L1: 1.2983 | val L1: 1.3715\n",
+            "Epoch 09 | train L1: 1.2992 | val L1: 1.3711\n",
+            "Epoch 10 | train L1: 1.2996 | val L1: 1.3723\n",
+            "Epoch 11 | train L1: 1.2995 | val L1: 1.3701\n",
+            "Epoch 12 | train L1: 1.2988 | val L1: 1.3698\n",
+            "Epoch 13 | train L1: 1.2985 | val L1: 1.3699\n",
+            "Epoch 14 | train L1: 1.2985 | val L1: 1.3771\n",
+            "Epoch 15 | train L1: 1.2992 | val L1: 1.3721\n",
+            "Epoch 16 | train L1: 1.2983 | val L1: 1.3772\n",
+            "Epoch 17 | train L1: 1.2995 | val L1: 1.3690\n",
+            "Epoch 18 | train L1: 1.2998 | val L1: 1.3719\n",
+            "Epoch 19 | train L1: 1.2995 | val L1: 1.3688\n",
+            "Epoch 20 | train L1: 1.2988 | val L1: 1.3683\n",
+            "Epoch 21 | train L1: 1.2985 | val L1: 1.3683\n",
+            "Epoch 22 | train L1: 1.2987 | val L1: 1.3711\n",
+            "Epoch 23 | train L1: 1.2997 | val L1: 1.3732\n",
+            "Epoch 24 | train L1: 1.2990 | val L1: 1.3702\n",
+            "Epoch 25 | train L1: 1.2993 | val L1: 1.3715\n",
+            "Epoch 26 | train L1: 1.2993 | val L1: 1.3687\n",
+            "Epoch 27 | train L1: 1.2987 | val L1: 1.3723\n",
+            "Epoch 28 | train L1: 1.2994 | val L1: 1.3689\n",
+            "Epoch 29 | train L1: 1.2988 | val L1: 1.3714\n",
+            "Epoch 30 | train L1: 1.3002 | val L1: 1.3684\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "model.eval()\n",
+        "preds, actuals, weights = [], [], []\n",
+        "holiday_idx = feature_cols.index('IsHoliday')\n",
+        "\n",
+        "with torch.no_grad():\n",
+        "    for xb, yb in val_dl:\n",
+        "        xb = xb.to(device)\n",
+        "        preds.append(model(xb).detach().cpu().tolist())\n",
+        "        actuals.append(yb.detach().cpu().tolist())\n",
+        "        weights.append(xb[:, -1, holiday_idx].detach().cpu().tolist())\n",
+        "\n",
+        "\n",
+        "\n",
+        "preds    = np.expm1(np.concatenate(preds).flatten())\n",
+        "actuals  = np.expm1(np.concatenate(actuals).flatten())\n",
+        "weights  = np.where(np.concatenate(weights).flatten() == 1, 5, 1)\n",
+        "\n",
+        "wmae = np.sum(weights * np.abs(preds - actuals)) / np.sum(weights)\n",
+        "print(f\"\\n✅  WMAE (Store {STORE_ID}): {wmae:,.2f}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "-rEJif6i76ip",
+        "outputId": "243fd2ef-d706-43f1-c026-a1e854ea057b"
+      },
+      "execution_count": 55,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "✅  WMAE (Store 1): 18,232.87\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "xM6Yhf9y8WJB"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNi+VzbKMRa69BA8kKXf0ZY",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
