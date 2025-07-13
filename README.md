@@ -2,7 +2,9 @@
 ეს პროექტი მიზნად ისახავს წინასწარმეტყველებას მაღაზიების ყოველკვირეული გაყიდვების მოცულობაზე, „Walmart Recruiting - Store Sales Forecasting“ კაგლის კონკურსის მონაცემებზე დაყრდნობით.
 გამოყენებული ალგორითმები
 DLinear, RandomForestRegressor, LightGBM, XGBOOST, N-BEATS, ARIMA, SARIMA
+
 # 1. RANDOMFORESTREGRESSOR
+
  # სამუშაო ნაბიჯები
 მონაცემების ჩატვირთვა და გაწმენდა
 
