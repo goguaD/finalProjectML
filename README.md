@@ -41,7 +41,7 @@ DLinear, RandomForestRegressor, LightGBM, XGBOOST, N-BEATS, ARIMA, SARIMA
 
 Random Forest გთავაზობთ სტაბილურ შედეგს რამდენიმე ფუნქციის გამოყენებით, ყოველგვარი რთული ტიუნინგის გარეშე.
 
-# 2.ARIMA
+# 2. ARIMA
 ### Feature Engineering
 - **დროის მახასიათებლები:** Month, Week, DayOfYear
 - **Store-Department სტატისტიკა:** Sales_Mean, Sales_Std, Sales_Median, Sales_Min, Sales_Max
