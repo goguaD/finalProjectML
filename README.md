@@ -33,6 +33,7 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 - **გაყიდვების მაღალი კონცენტრაცია**: რამდენიმე დეპარტამენტი დომინირებს გაყიდვების მოცულობით
 - **Department Variability**: Activity across departments varies significantly and shows seasonal patterns
 - **Performance Patterns**: Different departments exhibit unique seasonal behaviors and sales cycles
+<img width="998" height="560" alt="image" src="https://github.com/user-attachments/assets/1d75d591-832b-4460-8e46-3904e1db2a24" />
 
 #### 4. Holiday and Markdown Effects
 - **დღესასწაულების გავლენა**: დღესასწაულებს დიდი გავლენა აქვს გაყიდვებზე
@@ -48,9 +49,10 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 
 
 #### 7. Time Series Characteristics
-- **ავტოკორელაცია**: ავტოკორელაციის პატერნები დროზე დამოკიდებულ გაყიდვების ხასიათზე მიუთითებს
+- **ავტოკორელაცია**: ავტოკორელაციის პატერნები იმას მიუთითებს, რომ უახლოესი გაყიდვები მნიშვნელოვანია პროგნოზირებისთვის, ამიტომ გამოსადეგი იქნება ლეგ ფიჩერები. 
 - **სეზონურობა**: ცალსახა კვირეული და თვიური პატერნებია დატასეტში
 <img width="577" height="467" alt="image" src="https://github.com/user-attachments/assets/87a5e0ce-b77c-4caf-a684-a81b829aec3c" />
+<img width="623" height="464" alt="image" src="https://github.com/user-attachments/assets/b420cc42-d0c9-49c2-a171-38183b492a71" />
 
 #### 8. Feature Correlation Analysis
 - **აღსანიშნავი კორელაციები**: მაღაზიის ტიპი,ზომა, და დღესასწაულები
