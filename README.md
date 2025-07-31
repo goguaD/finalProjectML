@@ -1,4 +1,63 @@
-<img width="1184" height="590" alt="image" src="https://github.com/user-attachments/assets/e62ccc11-1bab-4bbc-b126-ae22dd528189" />
+# finalProjectML
+
+მონაცემები:
+train.csv: ყოველკვირეული გაყიდვების მონაცემები 2010-დან to 2012-მდე.
+
+test.csv: სატესტო მონაცემები.
+
+features.csv: შემდეგი დამატებითი ინფორმაცია: ტემპერატურა, ბენზინის ფასი, CPI(The Consumer Price Index), უმუშევრობა, ფასდაკლებები, დღესასწაულები
+
+stores.csv: დამატებითი ინფორმაცია ყველა მაღაზიაზე: მაღაზიის ტიპები და ზომები.
+
+sampleSubmission.csv: საბმიშენის ფორმატი.
+
+## Exploratory Data Analysis (EDA)
+<img width="1243" height="496" alt="image" src="https://github.com/user-attachments/assets/fa3ff40c-afa2-463d-ad21-7a79c963de20" />
+
+### Key Findings and Patterns
+
+#### 1. გაყიდვების განაწილება
+- **სეზონური პატერნები**: ცალსახა სეზონური პიკები ყველაზე დიდ გავლენას ახდენს ყოველკვირეულ გაყიდვებზე
+- **დღესასწაულების სეზონური გავლენა**: ნოემბერი-დეკემბრის პერიოდში ცალსახა პიკს ვხედავთ
+- **ყოველწლიური ტრენდები**: გაყიდვები შუა წელში მცირდება და წლის ბოლოს, არდადეგების პერიოდში იზრდება
+<img width="1243" height="496" alt="image" src="https://github.com/user-attachments/assets/05bd2140-198f-4264-91a8-a0c1c203b850" />
+
+#### 2. მაღაზიების პერფორმანსი
+- **მაღაზიის ტიპები**: A ტიპის მაღაზიები საშუალოდ ყველაზე დიდ შემოსავალს ნახულობენ
+- **მაღაზიების ზომასთან კორელაცია**: დიდი მაღაზიები მეტ შემოსავალს იღებენ, თუმცა შედარებით ნაკლები კორელაცია აქვთ გაყიდვების ზრდასთან
+<img width="577" height="459" alt="image" src="https://github.com/user-attachments/assets/2b8f97bc-caee-4007-818b-b6959f8d4344" />
+
+<img width="904" height="556" alt="image" src="https://github.com/user-attachments/assets/6a982b29-4635-49b0-95cb-798b28c77b6f" />
+
+#### 3. დეპარტამენტების ტრენდები
+- **გაყიდვების მაღალი კონცენტრაცია**: რამდენიმე დეპარტამენტი დომინირებს გაყიდვების მოცულობით
+- **Department Variability**: Activity across departments varies significantly and shows seasonal patterns
+- **Performance Patterns**: Different departments exhibit unique seasonal behaviors and sales cycles
+
+#### 4. Holiday and Markdown Effects
+- **დღესასწაულების გავლენა**: დღესასწაულებს დიდი გავლენა აქვს გაყიდვებზე
+- **ფასდაკლებების გავლენა**: ფასდაკლებებს დადებითი გავლენა აქვს ზოგ კვირაში გაყიდვებზე
+- **სეზონური პიკები**: მნიშვნელოვანი დღესასწაულები გაყოდვების პიკებს ქმნიან 
+<img width="724" height="621" alt="image" src="https://github.com/user-attachments/assets/da02aa87-b546-40e4-a145-5a4465aeccb2" />
+<img width="577" height="487" alt="image" src="https://github.com/user-attachments/assets/79911c33-22b1-407d-b1e6-dcf2660402ae" />
+
+#### 5. ეკონომიკური ფაქტორების ანალიზო
+- **ნაკლები გავლენა**: CPI, საწვავის ფასს, და უმუშევრობას მინიმალურიეფექტი აქვს
+- **კორელაზია**: ეკონომიკურ ინდიკატორებს ძალიან სუსტი კორელაცია აქვთ ყოველკვირეულ გაყიდვებთან
+- **ტემპერატურა**: ექსტრემალურ მონაცემებზე საშუალო კორელაცია აქვს
+
+
+#### 7. Time Series Characteristics
+- **ავტოკორელაცია**: ავტოკორელაციის პატერნები დროზე დამოკიდებულ გაყიდვების ხასიათზე მიუთითებს
+- **სეზონურობა**: ცალსახა კვირეული და თვიური პატერნებია დატასეტში
+<img width="577" height="467" alt="image" src="https://github.com/user-attachments/assets/87a5e0ce-b77c-4caf-a684-a81b829aec3c" />
+
+#### 8. Feature Correlation Analysis
+- **აღსანიშნავი კორელაციები**: მაღაზიის ტიპი,ზომა, და დღესასწაულები
+- **სუსტი კორელაციები**: ეკონომიკური ინდიკატორები (CPI, უმუშევრობა, საწვავის ფასი) 
+- **ფასდაკლების ეფექტი**: სხვადასხვა ფასდაკლებების ტიპები სხვაასხვა კორელაციაში მოდიან გაყოდვებთან
+<img width="1983" height="1226" alt="image" src="https://github.com/user-attachments/assets/210543d8-682c-44ce-85ec-0677dd119ade" />
+
 
 # finalProjectML
 ეს პროექტი მიზნად ისახავს წინასწარმეტყველებას მაღაზიების ყოველკვირეული გაყიდვების მოცულობაზე, „Walmart Recruiting - Store Sales Forecasting“ კაგლის კონკურსის მონაცემებზე დაყრდნობით.
