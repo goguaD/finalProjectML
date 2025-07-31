@@ -1,3 +1,5 @@
+<img width="1184" height="590" alt="image" src="https://github.com/user-attachments/assets/e62ccc11-1bab-4bbc-b126-ae22dd528189" />
+
 # finalProjectML
 ეს პროექტი მიზნად ისახავს წინასწარმეტყველებას მაღაზიების ყოველკვირეული გაყიდვების მოცულობაზე, „Walmart Recruiting - Store Sales Forecasting“ კაგლის კონკურსის მონაცემებზე დაყრდნობით.
 გამოყენებული ალგორითმები
