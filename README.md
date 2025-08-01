@@ -47,6 +47,8 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 - **ნაკლები გავლენა**: CPI, საწვავის ფასს, და უმუშევრობას მინიმალურიეფექტი აქვს
 - **კორელაზია**: ეკონომიკურ ინდიკატორებს ძალიან სუსტი კორელაცია აქვთ ყოველკვირეულ გაყიდვებთან
 - **ტემპერატურა**: ექსტრემალურ მონაცემებზე საშუალო კორელაცია აქვს
+<img width="783" height="679" alt="image" src="https://github.com/user-attachments/assets/36d8a6d7-be44-4cf7-b97e-5af09be4b97f" />
+<img width="1484" height="1604" alt="image" src="https://github.com/user-attachments/assets/4ae3d80b-7d9e-47f0-928e-7e2f8ee01e1f" />
 
 
 #### 7. Time Series Characteristics
