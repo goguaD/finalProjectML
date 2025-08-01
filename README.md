@@ -12,7 +12,6 @@ stores.csv: დამატებითი ინფორმაცია ყვ
 sampleSubmission.csv: საბმიშენის ფორმატი.
 
 ## Exploratory Data Analysis (EDA)
-<img width="1243" height="496" alt="image" src="https://github.com/user-attachments/assets/fa3ff40c-afa2-463d-ad21-7a79c963de20" />
 
 ### Key Findings and Patterns
 
@@ -35,7 +34,6 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 - **Department Variability**: Activity across departments varies significantly and shows seasonal patterns
 - **Performance Patterns**: Different departments exhibit unique seasonal behaviors and sales cycles
 <img width="998" height="560" alt="image" src="https://github.com/user-attachments/assets/1d75d591-832b-4460-8e46-3904e1db2a24" />
-<img width="998" height="560" alt="image" src="https://github.com/user-attachments/assets/80cce95c-d001-4879-8206-32cf8b9a09c3" />
 <img width="1184" height="684" alt="image" src="https://github.com/user-attachments/assets/24a0d08c-8d09-48d5-b1b8-6d9bab729224" />
 
 #### 4. Holiday and Markdown Effects
