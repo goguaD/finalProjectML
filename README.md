@@ -268,6 +268,224 @@ xgb_base_params = {
 4. **IsHoliday** (2.65%) - დღესასწაული
 5. **Week** (2.31%) - კვირა
 
+
+# LightGBM Model Experiment 
+
+## განსხვავებები XGBoost Experiment-ისგან
+
+### 1. Model Architecture
+
+
+**Base Parameters:**
+```python
+lgb_base_params = {
+    'objective': 'regression',             
+    'metric': 'mae',                        # Mean Absolute Error
+    'n_estimators': 2000,                   # ბუსტინგის რაუნდების რაოდენობა
+    'learning_rate': 0.02,                  # ბეევრად დაბალი დასწავლის დონე
+    'feature_fraction': 0.8,                # იგივე colsample_bytree
+    'bagging_fraction': 0.8,                # იგივე subsample
+    'bagging_freq': 1,                      # ბეგინგის სიხშირე
+    'boosting_type': 'gbdt',                # Gradient boosting decision tree
+    'max_depth': -1,                        # არ აქვს ლიმიტი
+}
+```
+
+
+#### Hyperparameter Grid Search
+- **num_leaves**: [32, 64, 128] (LightGBM-ისთვის დამახასიათებლი პარამეტრი)
+- თუ XGBoost მაქსმალურ სიღრმეს იყენებს ხის კომპლექსურობის გასაკონტროლებლად, LightGBM იყენებს ფოთლების რაოდენობას
+
+### 2. Model Training Strategy
+
+**იგივენაირად:**
+- Time Series Split (2010-02-05 to 2012-06-30 - training, 2012-07-01 to 2012-10-26 - validation)
+- Weighted Loss Function
+- TimeSeriesSplit validation
+
+**LightGBM-ის ოპტიმიზაციები:**
+- **Leaf-wise tree growth**: უფრო ეფექტური ვიდრე დონეებად ზრდა
+- **Histogram-based algorithm**: სწრაფი ტრენინგი დიდ დატასეტებზე
+
+### 3. შედეგები
+
+
+| Model Configuration | Num Leaves | Learning Rate | Validation WMAE |
+|-------------------|------------|---------------|-----------------|
+| LightGBM_32       | 32         | 0.02          | 2034.72         |
+| LightGBM_64       | 64         | 0.02          | 1814.54         |
+| **LightGBM_128**  | **128**    | **0.02**      | **1797.79**     |
+
+#### Best Model Performance
+- **Best Validation WMAE**: 1797.79
+- **Best Parameters**: num_leaves=128, learning_rate=0.02, n_estimators=2000
+
+# Prophet Model Experiment 
+
+## Overview
+
+This repository contains a Prophet-based time series forecasting experiment for Walmart store sales. Prophet is a specialized time series forecasting tool developed by Facebook (Meta) that excels at handling seasonal patterns, holiday effects, and trend changes. Unlike XGBoost and LightGBM which are general-purpose machine learning algorithms, Prophet is specifically designed for time series forecasting with built-in capabilities for seasonality and holiday modeling.
+Prophet არის Facebook-ის (Meta) მიერ შემუშავებული სპეციალიზებული დროითი სერიების პროგნოზირების ინსტრუმენტი, რომელიც უმკლავდება სეზონურ პატერნებს, დღესასწაულების ეფექტებს და ტრენდების ცვლილებებს. XGBoost-ისა და LightGBM-ისგან განსხვავებით, რომლებიც ზოგადი დანიშნულების კლასიკური მლ ალგორითმებია, Prophet სპეციალურად შექმნილია დროითი სერიების პროგნოზირებისთვის, სეზონურობისა და დღესასწაულების მოდელირების ჩაშენებული შესაძლებლობებით.
+
+
+## როგორ მუშაობს Prophet
+
+### 1. Prophet's Mathematical Foundation
+
+სამი მთავარი კომპონენტი:
+
+```python
+y(t) = g(t) + s(t) + h(t) + ε(t)
+```
+
+სადაც:
+- **g(t)**: ტრენდი (linear ან logistic ზრდა)
+- **s(t)**: სეზონური კომპონენტი 
+- **h(t)**: დღესასაულები (holiday effects)
+- **ε(t)**: ცდომილება
+- 
+### 2.
+
+#### Trend Component (g(t))
+- ავტომატურად ხვდება როცა ტრენდი მიმართულებას ცვლის
+- მუშაობს წრფივ და არაწრფივ ტრენდებზე
+
+#### Seasonal Component (s(t))
+- იყენებს Fourier სერიებს პერიოდული პატერნების მოდელირებისთვის
+- სხვადასხა სიხშირის სეზონურობას იჭერს - წელი, სეზონი, თვე, კვირა
+
+#### Holiday Component (h(t))
+- იცის ცნობილი დღესასწაულების დღეები
+- ითვალისწინებს ამ დღესასწაულების გარშემო პერიოდს
+
+### 3. Prophet Model 
+
+#### Base Parameters
+```python
+model = Prophet(
+    holidays=walmart_holidays,    
+    yearly_seasonality=True,          
+    weekly_seasonality=True,     
+    daily_seasonality=False,    
+    seasonality_mode='multiplicative'  
+)
+```
+
+#### Key Configuration Differences from Other Models:
+- **No hyperparameter tuning**: default-ებით კარგად მუშაობს
+- **Seasonality modes**: 'additive' vs 'multiplicative' (ავირჩიეთ multiplicative გაყიდვებისთვის)
+
+თავიდან, როცა რეგრესორებს არ ვიყენებდი პრეპროცესინგის ნაწილი საერთოდ არ მქონდა, რადგან პროფეტი მისინგ მნიშვნელობებს თვითონ ხედავს და თან სეზონურობასაც თვითონ იჭერს, ამიტომ არ დამჭირვებია დამატებითი დროზე დამოკიდებული ფიჩერების შექმნა, უბრალოდ გადავეცი დღესასწაულების კალენდარი. 
+### 4. Data Requirements and Format
+
+#### Prophet-ისთვის დამახასიათებელიდატას ფორმატი
+```python
+# Prophet requires specific column names
+prophet_data = df.rename(columns={
+    'Date': 'ds',           # Date column must be named 'ds'
+    'Weekly_Sales': 'y'     # Target column must be named 'y'
+})
+```
+
+#### Required Columns:
+- **ds**: Date column (datetime format)
+- **y**: Target variable (numeric)
+- **Additional regressors**: სხვა რეგრესორები
+
+### 5. Multi-Model Approach
+
+#### Store-Department Specific Models
+XGBoost-ისგან და LightGBM-ისგან განსხვავებით, Prophet ერთ მოდელს არ იყენებს მთელ დატაზე, ის ყოფს მოდელებს ყველა მაღაზია-დეპარტამენტი კომბინაციისთვის:
+
+```python
+# Train individual models for each store-department combination
+for store, dept in combinations:
+    train_data = data[(data['Store'] == store) & (data['Dept'] == dept)]
+    
+    model = Prophet(
+        holidays=walmart_holidays,
+        yearly_seasonality=True,
+        weekly_seasonality=True,
+        daily_seasonality=False,
+        seasonality_mode='multiplicative'
+    )
+    
+    # Add external regressors
+    for regressor in extra_regressors:
+        model.add_regressor(regressor)
+    
+    model.fit(train_data)
+    models[(store, dept)] = model
+```
+
+#### Fallback Strategy
+გავტესტე ეს მიდგომაც, რათა მაქსიმალურად გამომეყენებინა დატა,იმ შემთხვევაში თუ მცირე მონაცემები მნიშვნელოვანიიქნებოდა საბოლოო შედეგისთვის, თუმცა ტრენინგის დროს ვნახე, რომ 
+თვითონს ეს სტრატეგიაც ისეთ ადეკვატურ შედეგს არ მაძლევდა, როგორსაც ველოდი (დიდი შეცდომა ჯდებოდა) და შემდეგ მის გარეშე რომ დავატრენინგე დიდი გავლენა მანდაც ვერ დავინახე. ბოლოს მას შემდეგ რაც ფასადკლებების სვეტები დავამატე რეგრესორად პრეპროცესინგის ნალების ჰენდლინგ ნაწილი გავატარე დატას, რადგან ფასდაკლებების ვეტებს განსხვავებული მიხედვა ჭირდებოდათ.
+### 6. გარე რეგრესორები
+
+```python
+# Add external regressors to the model
+extra_regressors = [
+    'Temperature', 'Fuel_Price', 'CPI', 'Unemployment',
+    'MarkDown1', 'MarkDown2', 'MarkDown3', 'MarkDown4', 'MarkDown5',
+    'IsHoliday', 'Size', 'Type_encoded'
+]
+
+for regressor in extra_regressors:
+    if regressor in prophet_train.columns:
+        model.add_regressor(regressor)
+```
+
+
+### 7. Holiday Modeling
+
+#### Custom კალენდარი
+```python
+# Define Walmart-specific holidays
+walmart_holidays = pd.DataFrame({
+    'holiday': 'Super Bowl',
+    'ds': pd.to_datetime(['2010-02-07', '2011-02-06', '2012-02-05']),
+    'lower_window': -1,
+    'upper_window': 1
+})
+```
+
+#### Holiday Effects:
+- **Pre-Holiday**: გაყიდვები იზრდება
+- **Holiday Day**: გაყიდვები პიკშია
+- **Post-Holiday**: გაყიდვები მცირდება
+- **Window Effects**: ამ ყველაფერს მოდელი იჭერს
+
+### 8. Model Training Strategy
+
+#### Same as Other Models:
+- **Time Series Split**: 2010-02-05 to 2012-06-30 for training, 2012-07-01 to 2012-10-26 for validation
+- **Weighted Loss Function**: 5x weight for holiday periods
+
+#### Prophet-Specific Approach:
+- **Individual Models**: სხვადასხვა მოდელი ყველა კომბინაციისთვის
+- **Automatic Seasonality**
+
+### 9. Results
+
+#### Model Performance
+- **Best Validation WMAE**: 2878.93
+- **Model Count**: 3,371
+- **Coverage**: 97.4% of Store-Dept combinations covered
+
+
+#### შესრულების მახასიათებლები:
+- **ძლიერი მხარეები**: შესანიშნავია სეზონური პატერნების და დღესასწაულების ეფექტების აღსაქმელად
+- **შეზღუდვები**: ნაკლებად მოქნილია რთული ფუნქციების ერთმანეთთან ურთიერთქმედების დროს
+- **მასშტაბირება**: მოითხოვს ბევრი მოდელის ტრენინგს და ბევრ დროს
+
+
+#### Prophet-ის უნიკალური უპირატესობები:
+- სეზონური პატერნების ავტომატურად ამოცნობა და მოდელირება
+- ჩაშენებული დღესასწაულის ეფექტის მოდელირება
+- ტენდენციის ცვლილებების მარტივად იდენტიფიცირება
+- ტრენდების, სეზონურობის და დღესასწაულების ეფექტების მკაფიო დაშლა
+
 # Deep Learning
 
 ## N-BEATS
