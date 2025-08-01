@@ -26,6 +26,7 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 - **მაღაზიის ტიპები**: A ტიპის მაღაზიები საშუალოდ ყველაზე დიდ შემოსავალს ნახულობენ
 - **მაღაზიების ზომასთან კორელაცია**: დიდი მაღაზიები მეტ შემოსავალს იღებენ, თუმცა შედარებით ნაკლები კორელაცია აქვთ გაყიდვების ზრდასთან
 <img width="577" height="459" alt="image" src="https://github.com/user-attachments/assets/2b8f97bc-caee-4007-818b-b6959f8d4344" />
+<img width="1011" height="560" alt="image" src="https://github.com/user-attachments/assets/be499e84-3480-4339-9e20-fc33ea78f3bb" />
 
 <img width="904" height="556" alt="image" src="https://github.com/user-attachments/assets/6a982b29-4635-49b0-95cb-798b28c77b6f" />
 
@@ -34,6 +35,8 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 - **Department Variability**: Activity across departments varies significantly and shows seasonal patterns
 - **Performance Patterns**: Different departments exhibit unique seasonal behaviors and sales cycles
 <img width="998" height="560" alt="image" src="https://github.com/user-attachments/assets/1d75d591-832b-4460-8e46-3904e1db2a24" />
+<img width="998" height="560" alt="image" src="https://github.com/user-attachments/assets/80cce95c-d001-4879-8206-32cf8b9a09c3" />
+<img width="1184" height="684" alt="image" src="https://github.com/user-attachments/assets/24a0d08c-8d09-48d5-b1b8-6d9bab729224" />
 
 #### 4. Holiday and Markdown Effects
 - **დღესასწაულების გავლენა**: დღესასწაულებს დიდი გავლენა აქვს გაყიდვებზე
