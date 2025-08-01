@@ -60,6 +60,214 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 - **ფასდაკლების ეფექტი**: სხვადასხვა ფასდაკლებების ტიპები სხვაასხვა კორელაციაში მოდიან გაყოდვებთან
 <img width="1983" height="1226" alt="image" src="https://github.com/user-attachments/assets/210543d8-682c-44ce-85ec-0677dd119ade" />
 
+# XGBoost Model Experiment 
+
+
+
+## Dataset
+
+## Model Architecture
+
+### 1. Data Preprocessing Pipeline
+
+
+#### MissingMarkdownHandler
+
+**პრობლემა:**
+- დატასეტი შეიცავს 5 ფასდაკლების სვეტს, რომელიც სხვადასხვა ტიპის ფასდაკლებას არნიშნავენ
+- ამ სვეტებში ძალიან ხშირია მისინგ ველიუები
+- Missing value-ები აუცილებლად არ ნიშნავს, რომ მაშინ ფასდაკლება არ ყოფილა, შეიძლება
+- ინფორმაცია უბრალოდ არ შეგროვებულა, ან ეს ფასდაკლების ტიპი ზოგ მაღაზიაში ან დეპარტამენტში არ ყოფილა და ა.შ.
+ასეთ შემთხვევაში ხუთივესთვის შევქმენი ახალი სვეტები - `MarkDown1_was_missing` (1/0), ეს ინარჩუებს იმას, რომ
+ინფორმაცია არ გვაქვს. შემდეგ მისინგ ველიუს მნიშვნელობას 0-ით ვცვლი.
+ 
+
+
+
+#### MissingValueImputer
+
+**Problem Context:**
+- The dataset contains numerical columns with missing values: Temperature, Fuel_Price, CPI, Unemployment
+- Test data shows significant missing values (e.g., CPI and Unemployment have only 76,902 non-null values out of 115,064 total records)
+- These are time-series data where temporal continuity is important
+- Different columns may have different missing value patterns and business implications
+- დატასეტი შეიცავს რიცხვით სვეტებს ცარიელი მნიშვნელობებით: ტემპერატურა, საწვავის ფასი, მომხმარებელთა ფასების ინდექსი, უმუშევრობა
+- time-series მონაცემებისთვის დროითი უწყვეტობა მნიშვნელოვანია
+
+1. **Forward-Fill (ffill):**
+   ```python
+   X_copy[col] = X_copy[col].fillna(method='ffill')
+   ```
+   - ავსებს გამოტოვებულ მნიშვნელობებს ბოლო ცნობილი მნიშვნელობით
+   - ვთვლით, რომ მნიშვნელობების დროის მცირე მონაკვეთში დრამატულად არ შეიცვლება, განსაკუთრებით CPI და უმუშევრობის შემთხვევაში 
+  
+ 
+
+2. **Backward-Fill (bfill):**
+   ```python
+   X_copy[col] = X_copy[col].fillna(method='bfill')
+   ```
+   - ავსებს გამოტოვებულ მნიშვნელობებს შემდეგი ცნობილი მნიშვნელობით
+   - ვთვლით, რომ მნიშვნელობების დროის მცირე მონაკვეთში დრამატულად არ შეიცვლება, განსაკუთრებით CPI და უმუშევრობის შემთხვევაში 
+  
+
+3. **Mean Imputation (Fallback):**
+   ```python
+   if X_copy[col].isnull().any() and col in self.means:
+       X_copy[col] = X_copy[col].fillna(self.means[col])
+   ```
+   - იყენებს სვეტის საშუალო მნიშვნელობას ბოლო გამოსავალის სახით.
+   - ვიყენებ მხოლოდ მაშინ, თუ დროითი მეთოდები ვერ აგვარებს ყველა გამოტოვებულ მნიშვნელობას.
+
+
+**ლოგიკა:**
+- **ტემპერატურა**: მოკლე პერიოდებში ამინდი სტაბილურია
+- **საწვავის ფასი**: სტანდარტულად ნელ-ნელა იცვლება
+- **CPI**: Consumer Price Index დროთა განმავლობაში ნელ-ნელა იცვლება
+- **უმუშევრობა**: ასევე
+
+
+
+#### AdvancedDateFeatureExtractor
+
+- გაყიდვები ავლენს ძლიერ დროით ტენდენციებს 
+- სადღესასწაულო პერიოდებს არაპროპორციული გავლენა აქვთ გაყიდვების მაჩვენებლებზე
+- ეკონომიკური ინდიკატორები (სმფ, უმუშევრობა) გარკვეულ გავლენას ახდენენ მომხმარებელთა ხარჯვის ქცევაზე
+- მარტივი თარიღების მახასიათებლები ვერ ასახავს საცალო ვაჭრობის ნიმუშების რთულ ციკლურ ბუნებას
+**Multi-Dimensional Feature Engineering:**
+
+### 1. **დავაამატე დროითი ფიჩერები:**
+```python
+X_copy['Year'] = X_copy[self.date_column].dt.year
+X_copy['Month'] = X_copy[self.date_column].dt.month
+X_copy['Day'] = X_copy[self.date_column].dt.day
+X_copy['DayOfWeek'] = X_copy[self.date_column].dt.dayofweek
+X_copy['Week'] = X_copy[self.date_column].dt.isocalendar().week.astype(int)
+X_copy['Quarter'] = X_copy[self.date_column].dt.quarter
+X_copy['DayOfYear'] = X_copy[self.date_column].dt.dayofyear
+```
+
+### 2. **ციკლური ენქოუდინგი (Sin/Cos Transformations):**
+```python
+X_copy['Month_sin'] = np.sin(2 * np.pi * X_copy['Month'] / 12)
+X_copy['Month_cos'] = np.cos(2 * np.pi * X_copy['Month'] / 12)
+X_copy['Week_sin'] = np.sin(2 * np.pi * X_copy['Week'] / 52)
+X_copy['Week_cos'] = np.cos(2 * np.pi * X_copy['Week'] / 52)
+X_copy['DayOfWeek_sin'] = np.sin(2 * np.pi * X_copy['DayOfWeek'] / 7)
+X_copy['DayOfWeek_cos'] = np.cos(2 * np.pi * X_copy['DayOfWeek'] / 7)
+```
+- ინარჩუნებს ციკლურ ბუნებას და კარგად იჭერს სეზონურ გადასვლებს
+
+### 3. **სეზონური კლასიფიკაციები:**
+```python
+X_copy['Season'] = X_copy['Month'].map({
+    12: 0, 1: 0, 2: 0,    # Winter
+    3: 1, 4: 1, 5: 1,     # Spring
+    6: 2, 7: 2, 8: 2,     # Summer
+    9: 3, 10: 3, 11: 3    # Fall
+})
+```
+- სეზონები დავამატე თვეების მიხედვით, მცირედი გაუმჯობესებისთვის
+
+### 4. **Calendar Event Flags:**
+```python
+X_copy['IsWeekend'] = (X_copy['DayOfWeek'] >= 5).astype(int)
+X_copy['IsMonthEnd'] = (X_copy[self.date_column].dt.is_month_end).astype(int)
+X_copy['IsMonthStart'] = (X_copy[self.date_column].dt.is_month_start).astype(int)
+```
+
+### 5. **არდადეგების პერიოდი:**
+```python
+def _is_holiday_period(self, date):
+    month, day = date.month, date.day
+    if month == 11 and day >= 22:  # Thanksgiving week
+        return 1
+    elif month == 12:              # Christmas season
+        return 1
+    elif month == 1 and day <= 7:  # New Year
+        return 1
+    elif month == 9 and day <= 7:  # Labor Day
+        return 1
+    elif month == 5 and day >= 25: # Memorial Day
+        return 1
+    else:
+        return 0
+```
+- უფრო ბუნებრივია, რომ კონკრეტული ერთი დღესასწაულის დღის მაგივრად ზოგადად მაგ დღესასწაულამდე პერიოდი განვიხილოთ, როცა საქმე გაყიდვებს ეხება
+
+### 6. **Economic Feature Engineering:**
+```python
+# MarkDown Intensity
+X_copy['Total_MarkDown'] = X_copy[markdown_cols].sum(axis=1)
+X_copy['MarkDown_Intensity'] = X_copy['Total_MarkDown'] / (X_copy['Total_MarkDown'].mean() + 1e-8)
+X_copy['HasMarkDown'] = (X_copy['Total_MarkDown'] > 0).astype(int)
+
+# Economic Indicators
+X_copy['Fuel_CPI_Ratio'] = X_copy['Fuel_Price'] / (X_copy['CPI'] + 1e-8)
+X_copy['Economic_Index'] = (X_copy['CPI'] * 0.4 + (100 - X_copy['Unemployment']) * 0.6) / 100
+```
+- ეკონომიკურმა ფიჩერებმა მინიმალური კორელაცია აჩვენეს სეილებზე და შევეცადე ოპტიმალურად გამომეყენებინა
+
+საბოლოო ჯამში გამოვიყენე MissingMarkdownHandler, MissingValueImputer, AdvancedDateFeatureExtractor, SmartLabelEncoder. 
+არ გამოვიყენე კოლელაციის მატრიცა, ამ შემტხვევაში, დატაში იქნებოდა მაღალ-კორელაციაში მყოფი სვეტები, რომლებიც საჭიროა და დამახასიათებელია
+Time-series პრედიქშენისთვის. თავიდან გამოვიყენე გრიდ სერჩი პარამეტრებისთვის, დავტოვე რამდენიმე საუკეთესო ვარიანტი და
+ბოლოს მაგეებზე ვქენი კიდე ერთხელ.
+
+### 3. XGBoost Model 
+
+```python
+xgb_base_params = {
+    'n_estimators': 200,               # ბუსტინგის რაუნდების/ხეების რაოდენობა
+    'subsample': 0.8,                  # ყველა ხე გამოიყენებს ტრეინის 80 პროცენტს, ოვერფიტის საწინააღმდეგოდ
+    'colsample_bytree': 0.8,           # ყველა ხე გამოიყენებს ფიჩერების 80 პროცენტს
+    'min_child_weight': 1,             # 	წონების მინიმალური ჯამი, რომელიც საჭიროა შვილობილ ნოუდში.
+    'eval_metric': 'mae',              # Mean Absolute Error
+    'early_stopping_rounds': 50        # 50 რაუნდის შემდეგ თუარ მოხდა გაუმჯობესება, შეწყვეტს
+}
+```
+
+#### Grid Search
+- **max_depth**: [6, 8] - რაც უფრო ღრმაა ხე მით უფრო კომპლექსურია მოდელი, მაგრამ უფრო მიდრეკილია overfit-ისკენ.
+- **learning_rate**: [0.05, 0.1] - რამდენად სწრაფად სწავლობს ჩვენი მოდელი შეცდომაზე. 
+
+## Model Training 
+
+### 1. Time Series Split
+- **Training**: 2010-02-05 - 2012-06-30
+- **Validation**: 2012-07-01 - 2012-10-26
+
+### 2. Weighted Loss Function
+- **Holiday**: 5x 
+- **Regular**: 1x 
+
+### 3. Validation
+- TimeSeriesSplit დროზე დამოკიდებული ვალიდაციისთვის და სწორი პროგნოზირებისთვის
+
+## Results
+
+### Model Performance Comparison
+
+| Model Configuration | Learning Rate | Max Depth |
+|-------------------|---------------|-----------|
+| XGBoost_0.05_6    | 0.05          | 6         |
+| XGBoost_0.05_8    | 0.05          | 8         |
+| XGBoost_0.1_6     | 0.1           | 6         | 
+| **XGBoost_0.1_8** | **0.1**       | **8**     |
+
+### საუკეთესო მოდელი
+- **Best Validation WMAE**: 2586.06
+- **Best Parameters**: learning_rate=0.1, max_depth=8
+- **Training WMAE**: 2313.77 (ოვერფიტისკენ მიდის)
+
+
+### Feature Importance 
+
+1. **Weekly_Sales_lag_1** (34.86%) - წინა კვირის სეილები
+2. **Weekly_Sales_lag_4** (33.56%) - 4 კვირის სეილები
+3. **Weekly_Sales_lag_52** (8.38%) - წლის
+4. **IsHoliday** (2.65%) - დღესასწაული
+5. **Week** (2.31%) - კვირა
+
 # Deep Learning
 
 ## N-BEATS
