@@ -206,7 +206,7 @@ xgb_base_params = {
 | **XGBoost_0.1_8** | **0.1**       | **8**     |
 
 ### საუკეთესო მოდელი
-- **Best Validation WMAE**: 2586.06
+- **Best Validation WMAE**: 2466.06
 - **Best Parameters**: learning_rate=0.1, max_depth=8
 - **Training WMAE**: 2313.77 (ოვერფიტისკენ მიდის)
 
