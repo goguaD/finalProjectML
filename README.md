@@ -23,7 +23,6 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 - **მაღაზიების ზომასთან კორელაცია**: დიდი მაღაზიები მეტ შემოსავალს იღებენ, თუმცა შედარებით ნაკლები კორელაცია აქვთ გაყიდვების ზრდასთან
 <img width="577" height="459" alt="image" src="https://github.com/user-attachments/assets/2b8f97bc-caee-4007-818b-b6959f8d4344" />
 <img width="1011" height="560" alt="image" src="https://github.com/user-attachments/assets/be499e84-3480-4339-9e20-fc33ea78f3bb" />
-
 <img width="904" height="556" alt="image" src="https://github.com/user-attachments/assets/6a982b29-4635-49b0-95cb-798b28c77b6f" />
 
 #### 3. დეპარტამენტების ტრენდები
@@ -59,9 +58,9 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 <img width="1983" height="1226" alt="image" src="https://github.com/user-attachments/assets/210543d8-682c-44ce-85ec-0677dd119ade" />
 
 # XGBoost Model Experiment 
+XGBoost თანმიმდევრულად აგებს გადაწყვეტილების ხეების, სადაც თითოეული ახალი ხე ასწორებს წინა ხეების შეცდომებს. მისი მთავარი მახასიათებელია ჩაშენებული L1 და L2 რეგულარიზაცია, რათა თავიდან იქნას აცილებული ოვერფიტი. ის იყენებს დონეების მიხედვით (სიგანეზე ორიენტირებულ) მიდგომას ხეების გასაზრდელად, ყველა კვანძს მოცემულ სიღრმეზე ყოფს შემდეგ დონეზე გადასვლამდე.
 
 ### 1. Data Preprocessing Pipeline
-
 
 #### MissingMarkdownHandler
 
@@ -220,7 +219,7 @@ xgb_base_params = {
 # LightGBM Model Experiment 
 
 ## განსხვავებები XGBoost Experiment-ისგან
-
+LightGBM XGBoost-ისგან განსხვავდება ფოთლებზე ორიენტირებული (სიღრმეზე ორიენტირებული) ხის ზრდის სტრატეგიის გამოყენებით, რამაც შეიძლება უფრო სწრაფი კონვერგენცია გამოიწვიოს. LightGBM ასევე იყენებს ინოვაციურ ტექნიკებს, როგორიცაა Gradient-based One-Side Sampling (GOSS) და Exclusive Feature Bundling (EFB) ტრენინგის სიჩქარისა და მეხსიერების გამოყენების ოპტიმიზაციისთვის, რაც მას განსაკუთრებით შესაფერისს ხდის დიდი მონაცემებისთვის.
 
 **Base Parameters:**
 ```python
