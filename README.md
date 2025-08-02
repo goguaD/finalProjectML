@@ -28,8 +28,6 @@ sampleSubmission.csv: საბმიშენის ფორმატი.
 
 #### 3. დეპარტამენტების ტრენდები
 - **გაყიდვების მაღალი კონცენტრაცია**: რამდენიმე დეპარტამენტი დომინირებს გაყიდვების მოცულობით
-- **Department Variability**: Activity across departments varies significantly and shows seasonal patterns
-- **Performance Patterns**: Different departments exhibit unique seasonal behaviors and sales cycles
 <img width="998" height="560" alt="image" src="https://github.com/user-attachments/assets/1d75d591-832b-4460-8e46-3904e1db2a24" />
 <img width="1184" height="684" alt="image" src="https://github.com/user-attachments/assets/24a0d08c-8d09-48d5-b1b8-6d9bab729224" />
 
